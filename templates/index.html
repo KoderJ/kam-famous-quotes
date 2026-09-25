@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wisdom Vault — 100 Famous Quotes</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="background-decor">
+    <div class="decor-circle circle-1"></div>
+    <div class="decor-circle circle-2"></div>
+  </div>
+
+  <div class="container">
+    <header class="app-header">
+      <div class="brand">
+        <span class="brand-icon">✦</span>
+        <h1>Wisdom Vault</h1>
+      </div>
+      <p class="tagline">Explore timeless insights from 100 renowned thinkers and pioneers</p>
+      <div class="badge-total">
+        <span class="pulse-dot"></span> 100 Curated Quotes in Vault
+      </div>
+    </header>
+
+    <!-- Main Spotlight Card for Random Quote -->
+    <main>
+      <section class="quote-spotlight" id="quoteSpotlight" aria-label="Random Quote Spotlight">
+        <div class="card-glass quote-card" id="quoteCard">
+          <div class="quote-icon" aria-hidden="true">“</div>
+          <div class="quote-body">
+            <blockquote id="quoteText" class="quote-text">
+              Loading an inspiring quote...
+            </blockquote>
+            <div class="quote-meta">
+              <cite id="quoteAuthor" class="quote-author">—</cite>
+              <button type="button" id="quoteCategoryBadge" class="category-badge" title="Filter by this category">
+                Category
+              </button>
+            </div>
+          </div>
+          
+          <div class="quote-actions">
+            <button id="btnNewQuote" class="btn btn-primary" aria-label="Get another random quote">
+              <span class="btn-icon">↻</span>
+              <span>New Random Quote</span>
+            </button>
+            <div class="secondary-actions">
+              <button id="btnCopyQuote" class="btn btn-secondary" title="Copy quote to clipboard" aria-label="Copy quote">
+                <span class="btn-icon">📋</span>
+                <span class="btn-label">Copy</span>
+              </button>
+              <button id="btnTweetQuote" class="btn btn-secondary" title="Share on X / Twitter" aria-label="Share quote">
+                <span class="btn-icon">𝕏</span>
+                <span class="btn-label">Share</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search & Filter Controls -->
+      <section class="explorer-section" aria-label="Search and Explore Quotes">
+        <div class="card-glass search-toolbar">
+          <div class="toolbar-title-row">
+            <h2>Search & Filter Vault</h2>
+            <span id="resultsStats" class="results-stats">Showing 100 quotes</span>
+          </div>
+
+          <div class="filters-row">
+            <div class="input-group search-input-group">
+              <span class="input-icon" aria-hidden="true">🔍</span>
+              <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Search by author or keywords (e.g., Einstein, wisdom)..." 
+                autocomplete="off"
+                aria-label="Search quotes by author or text"
+              />
+              <button id="btnClearSearch" class="btn-clear" title="Clear search" aria-label="Clear search">✕</button>
+            </div>
+
+            <div class="input-group select-input-group">
+              <label for="categoryFilter" class="sr-only">Filter by category</label>
+              <select id="categoryFilter" aria-label="Filter by category">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+
+            <button id="btnResetAll" class="btn btn-ghost" title="Reset all filters">Reset</button>
+          </div>
+        </div>
+
+        <!-- Quotes Grid / List Results -->
+        <div id="quotesGrid" class="quotes-grid" aria-live="polite">
+          <!-- Populated dynamically by app.js -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state hidden">
+          <div class="empty-icon">🔎</div>
+          <h3>No quotes found</h3>
+          <p>Try searching for a different author, keyword, or clearing the category filter.</p>
+          <button id="btnEmptyReset" class="btn btn-primary">Reset Filters</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>Built with Python Flask & Vanilla JavaScript • 100 Famous Quotes</p>
+    </footer>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite">Quote copied to clipboard!</div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
