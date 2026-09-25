@@ -1,4 +1,6 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, Response
+import csv
+import io
 import json
 import random
 from pathlib import Path
@@ -38,12 +40,7 @@ def get_random_quote():
     quote = random.choice(pool)
     return jsonify(quote)
 
-@app.route("/api/quotes/search")
-def search_quotes():
-    q = request.args.get("q", "").strip().lower()
-    author = request.args.get("author", "").strip().lower()
-    category = request.args.get("category", "").strip().lower()
-
+def filter_quotes(q="", author="", category=""):
     results = QUOTES
     if category:
         results = [quote for quote in results if quote["category"].lower() == category]
@@ -54,7 +51,15 @@ def search_quotes():
             quote for quote in results
             if q in quote["quote"].lower() or q in quote["author"].lower()
         ]
+    return results
 
+@app.route("/api/quotes/search")
+def search_quotes():
+    q = request.args.get("q", "").strip().lower()
+    author = request.args.get("author", "").strip().lower()
+    category = request.args.get("category", "").strip().lower()
+
+    results = filter_quotes(q=q, author=author, category=category)
     return jsonify({
         "count": len(results),
         "quotes": results
@@ -63,6 +68,27 @@ def search_quotes():
 @app.route("/api/quotes")
 def get_all_quotes():
     return search_quotes()
+
+@app.route("/api/quotes/export/csv")
+def export_csv():
+    q = request.args.get("q", "").strip().lower()
+    author = request.args.get("author", "").strip().lower()
+    category = request.args.get("category", "").strip().lower()
+
+    results = filter_quotes(q=q, author=author, category=category)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["ID", "Quote", "Author", "Category"])
+    for item in results:
+        writer.writerow([item["id"], item["quote"], item["author"], item["category"]])
+
+    return Response(
+        output.getvalue(),
+        mimetype="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=famous_quotes.csv"}
+    )
+
 
 @app.route("/api/categories")
 def get_categories():

@@ -95,3 +95,25 @@ def test_get_authors(client):
     authors = response.get_json()
     assert len(authors) > 0
     assert "Albert Einstein" in authors
+
+def test_export_csv_all(client):
+    """Test exporting all 100 quotes to CSV."""
+    response = client.get("/api/quotes/export/csv")
+    assert response.status_code == 200
+    assert "text/csv" in response.headers["Content-Type"]
+    assert "attachment; filename=famous_quotes.csv" in response.headers["Content-Disposition"]
+    
+    lines = response.data.decode("utf-8").strip().split("\r\n")
+    # Header + 100 quotes
+    assert lines[0] == "ID,Quote,Author,Category"
+    assert len(lines) == 101
+
+def test_export_csv_filtered(client):
+    """Test exporting filtered quotes to CSV."""
+    response = client.get("/api/quotes/export/csv?category=Philosophy")
+    assert response.status_code == 200
+    lines = response.data.decode("utf-8").strip().split("\r\n")
+    assert lines[0] == "ID,Quote,Author,Category"
+    # Philosophy has 20 quotes + 1 header
+    assert len(lines) == 21
+

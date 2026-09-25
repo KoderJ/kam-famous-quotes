@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('searchInput');
   const btnClearSearch = document.getElementById('btnClearSearch');
   const categoryFilter = document.getElementById('categoryFilter');
+  const btnExportCsv = document.getElementById('btnExportCsv');
   const btnResetAll = document.getElementById('btnResetAll');
   const quotesGrid = document.getElementById('quotesGrid');
   const resultsStats = document.getElementById('resultsStats');
@@ -159,7 +160,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="mini-badge">${escapeHtml(quote.category)}</span>
           </div>
           <div class="mini-actions">
-            <button class="btn-mini-copy" title="Copy quote" aria-label="Copy quote">📋</button>
+            <button class="btn-mini-copy" title="Copy quote to clipboard" aria-label="Copy quote">
+              <span>📋</span> <span class="copy-label">Copy</span>
+            </button>
           </div>
         </div>
       `;
@@ -185,6 +188,13 @@ document.addEventListener('DOMContentLoaded', () => {
       miniCopy.addEventListener('click', (e) => {
         e.stopPropagation();
         copyToClipboard(`"${quote.quote}" — ${quote.author}`);
+        const label = miniCopy.querySelector('.copy-label');
+        if (label) label.textContent = 'Copied!';
+        miniCopy.classList.add('copied');
+        setTimeout(() => {
+          if (label) label.textContent = 'Copy';
+          miniCopy.classList.remove('copied');
+        }, 1600);
       });
 
       fragment.appendChild(card);
@@ -253,8 +263,29 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCopyQuote.addEventListener('click', () => {
       if (currentQuote) {
         copyToClipboard(`"${currentQuote.quote}" — ${currentQuote.author}`);
+        const label = btnCopyQuote.querySelector('.btn-label');
+        if (label) {
+          const originalText = label.textContent;
+          label.textContent = 'Copied!';
+          setTimeout(() => { label.textContent = originalText; }, 1600);
+        }
       }
     });
+
+    // Export to CSV
+    if (btnExportCsv) {
+      btnExportCsv.addEventListener('click', () => {
+        const q = searchInput.value.trim();
+        const category = categoryFilter.value;
+        const params = new URLSearchParams();
+        if (q) params.append('q', q);
+        if (category) params.append('category', category);
+
+        const url = `/api/quotes/export/csv${params.toString() ? '?' + params.toString() : ''}`;
+        window.location.href = url;
+        showToast('Exporting quotes to CSV...');
+      });
+    }
 
     // Tweet / Share Quote
     btnTweetQuote.addEventListener('click', () => {
